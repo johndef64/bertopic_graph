@@ -13,7 +13,7 @@ All required libraries and their specific versions used for this project are lis
 To perform the GRPM BERTopic analysis, follow the steps laid out in the `grpm_bertopic.ipynb` notebook. Each step is well-documented and includes the corresponding code snippet. Following these steps, you'll be able to unravel the intricate connections between genetic variations and MeSH term provided.
 
 The general workflow has been depicted below:
-![Workflow](data/workflow_chat.png)
+![Workflow](data/workflow_chart.png)
 
 ## About GRPM BERTopic Analysis
 This analysis leverages the BERTopic pipeline to perform the following steps:
