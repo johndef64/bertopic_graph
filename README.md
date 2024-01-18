@@ -2,6 +2,8 @@
 # GRPM BERTopic Analysis
 This repository contains the Jupyter notebook `grpm_bertopic.ipynb` which a topic modeling pipeline BERTopic based to unravel hidden topic among Pubmed genetic literature.
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/johndef64/grpm_bertopic/blob/main/grpm_bertopic.ipynb)
+
 ## Repository Structure
 - `data` : This folder contains the required data for running the Jupyter notebook.
 - `grpm_bertopic.ipynb` : The Jupyter notebook file contains all the steps, code and detailed information about the GRPM BERTopic analysis process.
