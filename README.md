@@ -21,10 +21,10 @@ The general workflow has been depicted below:
 
 ## About GRPM BERTopic Analysis
 This analysis leverages the BERTopic pipeline to perform the following steps:
-1. It fetches a comprehensive dataset of abstracts on human genetic polymorphisms from LitVar knowledge base.
-2. Utilizes the BERTopic architecture to perform topic modeling on the corpus of abstracts.
-3. Employing Hierarchical Clustering, a comprehensive vision of the underlying structure of the topic model is achieved.
-4. By performing post-processing, it elucidates certain topics for further detailed exploration of the content and potential implications of the identified genetic influences on the biomedical filed defined by your custom MeSH terms.
+0. It fetches a comprehensive dataset of paper abstracts related to human genetic polymorphisms (GRPM Dataset, based on LitVar and PubMed) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8205724.svg)](https://doi.org/10.5281/zenodo.8205724)
+1. The preprocessing of this dataset is based on custom set of MeSH terms provided by the user (an example could be found in `data/ref-mesh.csv`). It is necessary to get the corpus of paper abstracts for the next step.
+2. Utilizes the BERTopic architecture to perform topic modeling on the corpus of abstracts. Employing Hierarchical Clustering, a comprehensive vision of the underlying structure of the topic model is achieved.
+3. By performing post-processing, it elucidates certain topics for further detailed exploration of the content and potential implications of the identified genetic influences on the biomedical filed defined by your custom MeSH terms.
 
 If you encounter any issues or have any questions, feel free to open an issue in this repository.
 
