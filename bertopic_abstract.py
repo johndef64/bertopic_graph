@@ -218,7 +218,7 @@ def setup_model(base_embedder ="allenai-specter",
 #### TRAIN MODEL #####
 ## If you want to split embedding phase, use it as follows:
 
-def train_model(docs_processed, embedding_file = ''):
+def train_model(topic_model, docs_processed, embedding_file = ''):
     # Step 1 Embedding documents with sentence_transformer
 
     if embedding_file != '':
@@ -233,7 +233,7 @@ def train_model(docs_processed, embedding_file = ''):
 
     return topics, probs, embeddings
 
-#%%
+
 def get_topic_info(topic_model):
     df = topic_model.get_topic_info()
     return df
@@ -285,9 +285,8 @@ def visualize_distribution(topic_model, probs):
                                                  custom_labels = False)
         fig.show()
 
-def visualize_similarty(topic_model, top_n_topics=5):
+def visualize_similarty(topic_model, topics, top_n_topics=5):
     fig = go.Figure()
-    topics = topic_model.get_topics()
     fig = topic_model.visualize_heatmap(topics=topics,
                                         top_n_topics = top_n_topics,
                                         #n_clusters = 20,
@@ -298,13 +297,17 @@ def visualize_similarty(topic_model, top_n_topics=5):
     fig.show()
 
 def visualize_hierarchy(topic_model, width=700, height=600):
-    topic_model.visualize_hierarchy(width=width, height=height) #The topics that were created can be hierarchically reduced.
+    fig = go.Figure()
+    fig = topic_model.visualize_hierarchy(width=width, height=height) #The topics that were created can be hierarchically reduced.
+    fig.show()
 
 def visualize_barchart(topic_model, topics, n_words=20):
+    fig = go.Figure()
     topic_model.visualize_barchart(n_words = n_words,
                                    topics = topics,
                                    #top_n_topics=len(topic_info)//4,
                                    )
+    fig.show()
 
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
@@ -350,19 +353,24 @@ def create_wordcloud_from_corpus(corpus, output_path='wordcloud.png', dpi=300, s
     plt.show()
 
 
-r'''# Basic Usage
-bert_abs = load_scopus_abstracts(r"C:\Users\Utente\Downloads\scopus_sem+bioint+omics.csv")
-topic_model = setup_model()
-topics, probs, embeddings = train_model(bert_abs)
+help=r'''
+# Basic Usage
 
-#%%
-get_topic_info()
-get_document_info(bert_abs)
-#%%
-visualize_documents(bert_abs)
-#%%
-visualize_distribution(probs)
-#%%
-visualize_similarty(top_n_topics=5)
-#%%
-visualize_hierarchy(width=700, height=600)'''
+import bertopic_abstract as bt
+
+bert_abs = bt.load_scopus_abstracts(r"C:\Users\Utente\Downloads\scopus_sem+bioint+omics.csv")
+topic_model = bt.setup_model()
+topics, probs, embeddings = bt.train_model(topic_model, bert_abs)
+
+bt.get_topic_info(topic_model)
+
+bt.get_document_info(topic_model, bert_abs)
+
+bt.visualize_documents(topic_model, bert_abs)
+
+#bt.visualize_distribution(topic_model, probs)
+
+bt.visualize_similarty(topic_model,topics, top_n_topics=1)
+
+bt.visualize_hierarchy(topic_model, width=700, height=600)
+'''
