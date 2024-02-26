@@ -35,7 +35,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-import pyperclip as pc
+
 
 # Plotly: Set notebook mode to work offline
 import plotly.offline as pyo
