@@ -359,7 +359,11 @@ help=r'''
 import bertopic_abstract as bt
 
 bert_abs = bt.load_scopus_abstracts(r"C:\Users\Utente\Downloads\scopus_sem+bioint+omics.csv")
-topic_model = bt.setup_model()
+topic_model = bt.setup_model(base_embedder ="allenai-specter",
+                n_neighbors  = 15,
+                n_components = 5,
+                random_state = 1337,
+                min_cluster_size = 5)
 topics, probs, embeddings = bt.train_model(topic_model, bert_abs)
 
 bt.get_topic_info(topic_model)
