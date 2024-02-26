@@ -234,11 +234,11 @@ def train_model(docs_processed, embedding_file = ''):
     return topics, probs, embeddings
 
 #%%
-def get_topic_info():
+def get_topic_info(topic_model):
     df = topic_model.get_topic_info()
     return df
 
-def get_topics():
+def get_topics(topic_model):
     all_topics = topic_model.get_topics()
     topic_df = pd.DataFrame(all_topics)
     return topic_df
@@ -246,12 +246,12 @@ def get_topics():
 # Probablities
 #probs_df = pd.DataFrame(probs)
 
-def get_topic_freq():
+def get_topic_freq(topic_model):
     topic_freq = topic_model.get_topic_freq()
     print('total',topic_freq.Count.sum())
     return topic_freq
 
-def get_document_info(docs_processed):
+def get_document_info(topic_model, docs_processed):
     doc_info = topic_model.get_document_info(docs_processed)
     print(doc_info.columns)
     return doc_info
@@ -265,7 +265,7 @@ def get_document_info(docs_processed):
 
 import plotly.graph_objects as go
 
-def visualize_documents(docs_processed, sample=1, embeddings='', custom_labels=False):
+def visualize_documents(topic_model, docs_processed, sample=1, embeddings='', custom_labels=False):
     if embeddings != '':
         map = topic_model.visualize_documents(docs_processed, embeddings=embeddings, sample=sample, custom_labels=custom_labels)
     else:
@@ -277,7 +277,7 @@ def visualize_documents(docs_processed, sample=1, embeddings='', custom_labels=F
     # Show the figure
     fig.show()
 
-def visualize_distribution(probs):
+def visualize_distribution(topic_model, probs):
     fig = go.Figure()
     for n in range(3):
         fig = topic_model.visualize_distribution(probs[n],
@@ -285,7 +285,7 @@ def visualize_distribution(probs):
                                                  custom_labels = False)
         fig.show()
 
-def visualize_similarty(top_n_topics=5):
+def visualize_similarty(topic_model, top_n_topics=5):
     fig = go.Figure()
     topics = topic_model.get_topics()
     fig = topic_model.visualize_heatmap(topics=topics,
@@ -297,10 +297,10 @@ def visualize_similarty(top_n_topics=5):
     #fig.write_image("fig1.png", engine='kaleido')
     fig.show()
 
-def visualize_hierarchy(width=700, height=600):
+def visualize_hierarchy(topic_model, width=700, height=600):
     topic_model.visualize_hierarchy(width=width, height=height) #The topics that were created can be hierarchically reduced.
 
-def visualize_barchart(topics, n_words=20):
+def visualize_barchart(topic_model, topics, n_words=20):
     topic_model.visualize_barchart(n_words = n_words,
                                    topics = topics,
                                    #top_n_topics=len(topic_info)//4,
@@ -309,8 +309,8 @@ def visualize_barchart(topics, n_words=20):
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
-def create_wordcloud(model, topic):
-    text = {word: value for word, value in model.get_topic(topic)}
+def create_wordcloud(topic_model, topic):
+    text = {word: value for word, value in topic_model.get_topic(topic)}
     print(text)
     wc = WordCloud(background_color="white", max_words=1000, width=800, height=400)
     wc.generate_from_frequencies(text)
@@ -318,7 +318,7 @@ def create_wordcloud(model, topic):
     plt.axis("off")
     plt.show()
 
-def create_wordcloud_multiple(topics, output_path='wordcloud.png', dpi=300, save=True):
+def create_wordcloud_multiple(topic_model, topics, output_path='wordcloud.png', dpi=300, save=True):
     merged_dict = {}
     for i in topics:
         text = {word: value for word, value in topic_model.get_topic(i)}
