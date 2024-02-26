@@ -148,7 +148,7 @@ from bertopic.representation import KeyBERTInspired
 sentence_transformer = SentenceTransformer("all-mpnet-base-v2")
 
 def setup_model(base_embedder ="allenai-specter",
-                n_neighbors  = 15,
+                n_neighbors  = 5,
                 n_components = 5,
                 random_state = 1337,
                 min_cluster_size = 5):
