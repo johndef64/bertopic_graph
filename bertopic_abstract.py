@@ -35,7 +35,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-
+import pyperclip as pc
 
 # Plotly: Set notebook mode to work offline
 import plotly.offline as pyo
@@ -45,9 +45,6 @@ pyo.init_notebook_mode()
 # Set data directory
 save_path = 'data/'
 
-# Set working directory
-if 'notebooks' in os.getcwd():
-    os.chdir(os.path.dirname(os.getcwd()))
 
 
 # Define functions
@@ -106,8 +103,8 @@ def lower(text):
 
 
 docs =[]
-#### Load Abstracts
-def load_abstracts_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
+#### Load Corpus
+def load_corpus_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
     global docs
     df = pd.read_csv(doc_name, index_col=0)
     docs = df.Abstract.drop_duplicates().to_list()
@@ -115,11 +112,11 @@ def load_abstracts_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
           '\nabstract count:', df[abs_col].nunique(),
           '\nEntry without abstract:',len(df)-df.Abstract.nunique())
 
-    # lower text keeping acronyms uppercase
-
-    docs_to_process = docs#[100:1600]#random.sample(docs, 100)
 
     # Normalize docs
+    # lower text keeping acronyms uppercase
+    docs_to_process = docs
+
     timea = time.time()
     sampled_docs = docs_to_process
     docs_str = str(sampled_docs)
@@ -132,7 +129,6 @@ def load_abstracts_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
     return docs_processed
 
 
-#%%
 ######### TOPIC MODELING #########
 
 import re
@@ -144,31 +140,48 @@ from bertopic import BERTopic
 from bertopic.vectorizers import ClassTfidfTransformer
 from bertopic.representation import MaximalMarginalRelevance
 from bertopic.representation import KeyBERTInspired
+#%%
 
-sentence_transformer = SentenceTransformer("all-mpnet-base-v2")
+text_models = {1:"allenai-specter",
+               # SPECTER is a model trained on scientific citations and can be used to estimate the similarity of two publications. We can use it to find similar papers.
+               2:"all-mpnet-base-v2",
+               # designed as general purpose model, The all-mpnet-base-v2 model provides the best quality,
+               3:"all-MiniLM-L6-v2"  # while all-MiniLM-L6-v2 is 5 times faster and still offers good quality.
+               } # https://www.sbert.net/docs/pretrained_models.html
 
-def setup_model(base_embedder ="allenai-specter",
-                n_neighbors  = 15,
-                n_components = 5,
-                random_state = 1337,
-                min_cluster_size = 5):
+text_model = text_models[int(input('Choose text model (id):\n'+str(text_models)))]
+sentence_transformer = SentenceTransformer(text_model)
+
+def setup_model(base_embedder = text_model,
+                # BERTopic
+                min_topic_size = 10,   # 10 default
+                top_n_words = 15,      # 10 default
+                # UMAP
+                n_neighbors  = 15, # num of high dimensional neighbours
+                n_components = 5,  # default:5
+                random_state = 1111,
+                # HDBSCAN
+                min_cluster_size = 5,
+                metric='euclidean',
+                cluster_selection_method='eom',
+                # CoutVectorizer
+                stop_words="english",
+                # Representation Model
+                diversity = 0.1, # 0.1 default
+                ):
 
     global sentence_transformer
 
     # Step 1 Extract embeddings (SBERT)
-    models = ["allenai-specter", # SPECTER is a model trained on scientific citations and can be used to estimate the similarity of two publications. We can use it to find similar papers.
-              "all-mpnet-base-v2",  # designed as general purpose model, The all-mpnet-base-v2 model provides the best quality,
-              "all-MiniLM-L6-v2" # while all-MiniLM-L6-v2 is 5 times faster and still offers good quality.
-              ] # https://www.sbert.net/docs/pretrained_models.html
+
     #base_embedder = models[0]  # BaseEmbedder
     sentence_transformer = SentenceTransformer(base_embedder) # SentenceTransformer
 
 
     # Step 2 - Reduce dimensionality
     # uniform manifold approximation and projection (UMAP) to reduce the dimension of embeddings
-    #random_state = 1337 #1000 #1337
-    umap_model = UMAP(n_neighbors  = n_neighbors, #num of high dimensional neighbours
-                      n_components = n_components, # default:5 #30
+    umap_model = UMAP(n_neighbors  = n_neighbors,
+                      n_components = n_components,
                       min_dist     = 0.0,
                       random_state = random_state) # default:None
     # https://stackoverflow.com/questions/71320201/how-to-fix-random-seed-for-bertopic
@@ -179,22 +192,20 @@ def setup_model(base_embedder ="allenai-specter",
     # Since HDBSCAN is a density-based clustering algorithm, the number of clusters is automatically chosen based on the minimum distance to be considered as a neighbor.
     #min_cluster_size = 5 #5 default HDBSCAN()
     hdbscan_model = HDBSCAN(min_cluster_size = min_cluster_size,
-                            metric='euclidean',
-                            cluster_selection_method='eom',
+                            metric=metric,
+                            cluster_selection_method=cluster_selection_method,
                             prediction_data=True)
 
     # Step 4 - Tokenize topics
-    vectorizer_model = CountVectorizer(stop_words="english", lowercase=False) # lowercase=False to keep genes uppercase
+    vectorizer_model = CountVectorizer(stop_words=stop_words, lowercase=False) # lowercase=False to keep Acronyms uppercase
 
-
-    # Step 5 - Create topic representation
+    # Step 5 - Create topic representation (ctIDF)
     ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True) # False default
-
 
     # Step 6 - Fine-tune topic representations with a bertopic.representation model
     # Create your representation model
-    representation_model = MaximalMarginalRelevance(diversity = 0.7,  # 0.1 default
-                                                    top_n_words = 15) # 10 default
+    representation_model = MaximalMarginalRelevance(diversity = diversity,
+                                                    top_n_words = top_n_words)
     #representation_model = KeyBERTInspired()
 
 
@@ -202,22 +213,20 @@ def setup_model(base_embedder ="allenai-specter",
 
     # All steps together
     topic_model = BERTopic(
-        min_topic_size = 10,                         # 10 default
-        top_n_words = 15,                            # 10 default
+        min_topic_size = min_topic_size,
+        top_n_words = top_n_words,
         calculate_probabilities = True,
         embedding_model = sentence_transformer,      # Step 1 - Extract embeddings
         umap_model = umap_model,                     # Step 2 - Reduce dimensionality
         hdbscan_model = hdbscan_model,               # Step 3 - Cluster reduced embeddings
         vectorizer_model = vectorizer_model,         # Step 4 - Tokenize topics
         ctfidf_model = ctfidf_model,                 # Step 5 - Extract topic words
-        representation_model= representation_model  # Step 6 - (Optional) Fine-tune topic represenations
+        representation_model = representation_model  # Step 6 - (Optional) Fine-tune topic representations
     )
     print('Topic Model ready\nUMAP random state:',random_state,'\nBase embedder:',base_embedder)
     return topic_model
 
 #### TRAIN MODEL #####
-## If you want to split embedding phase, use it as follows:
-
 def train_model(topic_model, docs_processed, embedding_file = ''):
     # Step 1 Embedding documents with sentence_transformer
 
@@ -233,6 +242,7 @@ def train_model(topic_model, docs_processed, embedding_file = ''):
 
     return topics, probs, embeddings
 
+#### EXPLORE MODEL #####
 
 def get_topic_info(topic_model):
     df = topic_model.get_topic_info()
@@ -243,8 +253,9 @@ def get_topics(topic_model):
     topic_df = pd.DataFrame(all_topics)
     return topic_df
 
-# Probablities
-#probs_df = pd.DataFrame(probs)
+def probs2df(probs):
+    probs_df = pd.DataFrame(probs)
+    return probs_df
 
 def get_topic_freq(topic_model):
     topic_freq = topic_model.get_topic_freq()
@@ -256,14 +267,12 @@ def get_document_info(topic_model, docs_processed):
     print(doc_info.columns)
     return doc_info
 
-'''def visualize_documents(docs_processed, sample=1, embeddings= '', custom_labels=False):
-    if embeddings != '':
-        map = topic_model.visualize_documents(docs_processed, embeddings=embeddings,sample= sample, custom_labels=custom_labels)
-    else:
-        map = topic_model.visualize_documents(docs_processed, sample= sample, custom_labels=custom_labels)
-    return map'''
+
+
+#### MODEL VISUALIZATION (Plotly) #####
 
 import plotly.graph_objects as go
+
 
 def visualize_documents(topic_model, docs_processed, sample=1, embeddings='', custom_labels=False):
     if embeddings != '':
@@ -276,38 +285,94 @@ def visualize_documents(topic_model, docs_processed, sample=1, embeddings='', cu
 
     # Show the figure
     fig.show()
+    return fig
 
-def visualize_distribution(topic_model, probs):
-    fig = go.Figure()
-    for n in range(3):
-        fig = topic_model.visualize_distribution(probs[n],
-                                                 min_probability = 0,
-                                                 custom_labels = False)
-        fig.show()
 
-def visualize_similarty(topic_model, topics, top_n_topics=5):
-    fig = go.Figure()
+def visualize_distribution(topic_model, probs, document_id=1):
+    fig = topic_model.visualize_distribution(probs[document_id],
+                                             min_probability = 0,
+                                             custom_labels = False)
+    fig.show()
+    return fig
+
+
+def visualize_similarty(topic_model, topics=None, top_n_topics=None, n_clusters=None, width = 1100, height = 1100, save= False):
     fig = topic_model.visualize_heatmap(topics=topics,
                                         top_n_topics = top_n_topics,
-                                        #n_clusters = 20,
-                                        custom_labels=True,
-                                        width = 1100,
-                                        height = 1100)
-    #fig.write_image("fig1.png", engine='kaleido')
+                                        n_clusters = n_clusters,
+                                        #custom_labels=True,
+                                        width = width,
+                                        height = height)
+    if save:
+        fig.write_image("heatmap.png", engine='kaleido')
     fig.show()
+    return fig
+
+
+
+import numpy as np
+import plotly.express as px
+from sklearn.metrics.pairwise import cosine_similarity
+
+def show_cosine_similarity(topic_model, topics, topic_info, width=800, height=800):
+
+    distance_matrix = cosine_similarity(np.array(topic_model.topic_embeddings_)[1:, :])
+
+    # get labels
+    labels = topic_info[topic_info.Topic.isin(topics)].Name
+    # Filter rows and columns based on indices
+    topics.sort()
+    rows_to_keep = topics
+    cols_to_keep = topics
+    filtered_distance_matrix = distance_matrix[np.ix_(rows_to_keep, cols_to_keep)]
+
+    fig = px.imshow(filtered_distance_matrix,
+                    labels=dict(color="Similarity Score"),
+                    x=labels,
+                    y=labels,
+                    color_continuous_scale='GnBu'
+                    )
+    title: str = "<b>Similarity Matrix</b>"
+    fig.update_layout(
+        title={
+            'text': f"{title}",
+            'y': .95,
+            'x': 0.55,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': dict(
+                size=22,
+                color="Black")
+        },
+        width=width,
+        height=height,
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=16,
+            font_family="Rockwell"
+        ),
+    )
+    fig.update_layout(showlegend=True)
+    fig.update_layout(legend_title_text='Trend')
+    fig.write_image("heatmap_short.png", engine="kaleido", scale=3)
+    fig.show()
+    return fig
+
 
 def visualize_hierarchy(topic_model, width=700, height=600):
-    fig = go.Figure()
     fig = topic_model.visualize_hierarchy(width=width, height=height) #The topics that were created can be hierarchically reduced.
     fig.show()
+    return fig
+
 
 def visualize_barchart(topic_model, topics, n_words=20):
-    fig = go.Figure()
-    topic_model.visualize_barchart(n_words = n_words,
-                                   topics = topics,
-                                   #top_n_topics=len(topic_info)//4,
-                                   )
+    fig = topic_model.visualize_barchart(n_words = n_words,
+                                         topics = topics,
+                                         #top_n_topics=len(topic_info)//4,
+                                         )
     fig.show()
+    return fig
+
 
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
@@ -320,13 +385,13 @@ def create_wordcloud(topic_model, topic):
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
     plt.show()
+    return plt
 
 def create_wordcloud_multiple(topic_model, topics, output_path='wordcloud.png', dpi=300, save=True):
     merged_dict = {}
     for i in topics:
         text = {word: value for word, value in topic_model.get_topic(i)}
         merged_dict.update(text)
-    #pc.copy(str(merged_dict))
 
     plt.figure(figsize=(12, 8))
 
@@ -338,6 +403,7 @@ def create_wordcloud_multiple(topic_model, topics, output_path='wordcloud.png', 
     if save:
         plt.savefig(output_path, dpi=dpi, bbox_inches='tight')
     plt.show()
+    return plt
 
 def create_wordcloud_from_corpus(corpus, output_path='wordcloud.png', dpi=300, save=True):
     # Combine the text corpus into a single string
@@ -351,30 +417,53 @@ def create_wordcloud_from_corpus(corpus, output_path='wordcloud.png', dpi=300, s
     if save:
         plt.savefig(output_path, dpi=dpi, bbox_inches='tight')
     plt.show()
+    return plt
 
 
 help=r'''
-# Basic Usage
+# Basic Usage as py module
 
+#### IMPORT #####
 import bertopic_abstract as bt
 
-bert_abs = bt.load_abstracts_from_csv(r"C:\Users\Utente\Downloads\scopus_sem+bioint+omics.csv")
-topic_model = bt.setup_model(base_embedder ="allenai-specter",
-                n_neighbors  = 15,
-                n_components = 5,
-                random_state = 1337,
-                min_cluster_size = 5)
+#### SETUP MODEL #####
+bert_abs = bt.load_corpus_from_csv(r"C:\Users\Utente\Downloads\scopus_sem+bioint+omics.csv")
+topic_model = bt.setup_model(
+                # BERTopic
+                min_topic_size = 10,   # 10 default
+                top_n_words = 15,      # 10 default
+                
+                # UMAP
+                n_neighbors  = 15, # num of high dimensional neighbours
+                n_components = 5,  # default:5 #30
+                random_state = 1111,
+                
+                # HDBSCAN
+                min_cluster_size = 5,
+                metric='euclidean',
+                cluster_selection_method='eom',
+                
+                # CoutVectorizer
+                stop_words="english",
+                
+                # Representation Model
+                diversity = 0.1, # 0.1 default
+                 )
+
+#### TRAIN MODEL #####
 topics, probs, embeddings = bt.train_model(topic_model, bert_abs)
 
-bt.get_topic_info(topic_model)
+#### EXPLORE MODEL #####
+topic_info = bt.get_topic_info(topic_model)
+document_info = bt.get_document_info(topic_model, bert_abs)
 
-bt.get_document_info(topic_model, bert_abs)
+#### MODEL VISUALIZATION (Plotly) #####
+fig_documents = bt.visualize_documents(topic_model, bert_abs)
+doc_distribution = bt.visualize_distribution(topic_model, probs, 1)
+fig_similarty = bt.visualize_similarty(topic_model,topics, width = 500, height = 500)
+fig_hierarchy = bt.visualize_hierarchy(topic_model, width=700, height=600)
 
-bt.visualize_documents(topic_model, bert_abs)
-
-#bt.visualize_distribution(topic_model, probs)
-
-bt.visualize_similarty(topic_model,topics, top_n_topics=1)
-
-bt.visualize_hierarchy(topic_model, width=700, height=600)
+#### WORD CLOUDS #####
+topic_cloud = bt.create_wordcloud(topic_model, topic)
+topics_cloud = bt.create_wordcloud_multiple(topic_model, topics, output_path='wordcloud.png', dpi=300, save=True)
 '''
