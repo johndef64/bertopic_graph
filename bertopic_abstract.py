@@ -30,12 +30,9 @@ import random
 import zipfile
 import requests
 import time
-from tqdm import tqdm
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 from datetime import datetime
-import pyperclip as pc
+
+
 
 # Plotly: Set notebook mode to work offline
 import plotly.offline as pyo
@@ -81,6 +78,24 @@ def get_gitfile(url, flag='', dir = os.getcwd()):
     else:
         print("Unable to download the file.")
 
+def check_and_install_requirements(requirements):
+    missing_requirements = []
+    for module in requirements:
+        try:
+            # Check if the module is already installed
+            importlib.import_module(module)
+        except ImportError:
+            missing_requirements.append(module)
+    if len(missing_requirements) == 0:
+        pass
+    else:
+        x = simple_bool(str(missing_requirements)+" are missing.\nWould you like to install them all?")
+        if x:
+            for module in missing_requirements:
+                subprocess.check_call(["pip", "install", module])
+                print(f"{module}' was installed correctly.")
+        else:
+            exit()
 def load_preprocessed(doc_name = 'abs_preprocessed.txt'):
     with open(save_path+doc_name, 'r',encoding='utf-8') as file:
         docs_processed = []
@@ -128,10 +143,17 @@ def load_corpus_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
     #print(docs_processed[1])
     return docs_processed
 
+######### INSTALL REQUIREMENTS #########
+requirements=['nltk','numpy','pandas','matplotlib','bertopic','wordcloud','bertopic[visualization]']
+check_and_install_requirements(requirements)
 
 ######### TOPIC MODELING #########
 
 import re
+import pandas as pd
+import numpy as np
+#from tqdm import tqdm
+import matplotlib.pyplot as plt
 from hdbscan import HDBSCAN
 from umap import UMAP
 from sentence_transformers import SentenceTransformer
