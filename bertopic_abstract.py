@@ -154,9 +154,11 @@ from bertopic.vectorizers import ClassTfidfTransformer
 from bertopic.representation import MaximalMarginalRelevance
 from bertopic.representation import KeyBERTInspired
 
-# Plotly: Set notebook mode to work offline
+# Plotly: set-up
 import plotly.graph_objs as go
 import plotly.io as pio
+
+#Set notebook mode to work offline
 #import plotly.offline as pyo
 #pyo.init_notebook_mode()
 
