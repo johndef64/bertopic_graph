@@ -300,7 +300,7 @@ def get_topic_freq(topic_model):
 
 def get_document_info(topic_model, docs_processed):
     doc_info = topic_model.get_document_info(docs_processed)
-    print(doc_info.columns)
+    #print(doc_info.columns)
     return doc_info
 
 
