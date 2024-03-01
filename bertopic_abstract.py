@@ -448,7 +448,7 @@ help=r'''
 import bertopic_abstract as bt
 
 #### SETUP MODEL #####
-bert_abs = bt.load_corpus_from_csv(r"C:\Users\Utente\Downloads\scopus_sem+bioint+omics.csv")
+bert_abs = bt.load_corpus_from_csv("data/scopus_trial.csv")
 topic_model = bt.setup_model(
                 # BERTopic
                 min_topic_size = 10,   # 10 default
