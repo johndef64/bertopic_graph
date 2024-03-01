@@ -21,16 +21,16 @@ else:
 
 
     # Import packages
+import re
 import os
 import io
 import sys
 import ast
-import re
+import time
 import random
 import zipfile
 import requests
-import time
-from datetime import datetime
+
 
 
 
@@ -138,18 +138,16 @@ def load_corpus_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
     docs_lower = lower(docs_str)
     docs_processed = ast.literal_eval(docs_lower)
     print('\nNormalization runtime:',time.time()-timea)
-
-    #print(docs_to_process[1],'\n')
-    #print(docs_processed[1])
     return docs_processed
+
 
 ######### INSTALL REQUIREMENTS #########
 requirements=['nltk','numpy','pandas','matplotlib','bertopic','wordcloud','bertopic[visualization]']
 check_and_install_requirements(requirements)
 
+
 ######### TOPIC MODELING #########
 
-import re
 import pandas as pd
 import numpy as np
 #from tqdm import tqdm
@@ -162,7 +160,7 @@ from bertopic import BERTopic
 from bertopic.vectorizers import ClassTfidfTransformer
 from bertopic.representation import MaximalMarginalRelevance
 from bertopic.representation import KeyBERTInspired
-#%%
+
 
 text_models = {1:"allenai-specter",
                # SPECTER is a model trained on scientific citations and can be used to estimate the similarity of two publications. We can use it to find similar papers.
@@ -179,8 +177,8 @@ def setup_model(base_embedder = text_model,
                 min_topic_size = 10,   # 10 default
                 top_n_words = 15,      # 10 default
                 # UMAP
-                n_neighbors  = 15, # num of high dimensional neighbours
-                n_components = 5,  # default:5
+                n_neighbors  = 15,  # num of high dimensional neighbours
+                n_components = 5,   # default:5
                 random_state = 1111,
                 # HDBSCAN
                 min_cluster_size = 5,
@@ -195,8 +193,6 @@ def setup_model(base_embedder = text_model,
     global sentence_transformer
 
     # Step 1 Extract embeddings (SBERT)
-
-    #base_embedder = models[0]  # BaseEmbedder
     sentence_transformer = SentenceTransformer(base_embedder) # SentenceTransformer
 
 
@@ -228,7 +224,7 @@ def setup_model(base_embedder = text_model,
     # Create your representation model
     representation_model = MaximalMarginalRelevance(diversity = diversity,
                                                     top_n_words = top_n_words)
-    #representation_model = KeyBERTInspired()
+    #representation_model = KeyBERTInspired() # alternative
 
 
     # Use the representation model in BERTopic on top of the default pipeline
