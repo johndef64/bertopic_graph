@@ -32,13 +32,6 @@ import zipfile
 import requests
 
 
-
-
-# Plotly: Set notebook mode to work offline
-import plotly.offline as pyo
-import plotly.graph_objs as go
-pyo.init_notebook_mode()
-
 # Set data directory
 save_path = 'data/'
 
@@ -142,9 +135,9 @@ def load_corpus_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
 
 
 ######### INSTALL REQUIREMENTS #########
-requirements=['nltk','numpy','pandas','matplotlib','bertopic','wordcloud','bertopic[visualization]']
+requirements=['nltk','numpy','pandas','matplotlib','bertopic','wordcloud']
 check_and_install_requirements(requirements)
-
+#!pip install bertopic[visualization]
 
 ######### TOPIC MODELING #########
 
@@ -160,6 +153,11 @@ from bertopic import BERTopic
 from bertopic.vectorizers import ClassTfidfTransformer
 from bertopic.representation import MaximalMarginalRelevance
 from bertopic.representation import KeyBERTInspired
+
+# Plotly: Set notebook mode to work offline
+import plotly.offline as pyo
+import plotly.graph_objs as go
+pyo.init_notebook_mode()
 
 
 text_models = {1:"allenai-specter",
@@ -241,8 +239,9 @@ def setup_model(base_embedder = text_model,
         ctfidf_model = ctfidf_model,                 # Step 5 - Extract topic words
         representation_model = representation_model  # Step 6 - (Optional) Fine-tune topic representations
     )
-    print('Topic Model ready\nUMAP random state:',random_state,'\nBase embedder:',base_embedder)
+    print('Topic Model ready\nBase embedder:',base_embedder, '\nBERTopic','\n  min_topic_size:', min_topic_size,'\n  min_topic_size:', min_topic_size,'\nUMAP','\n  n_neighbors:' ,n_neighbors,'\n  n_components:',n_components,'\n  random_state:',random_state,'\nHDBSCAN','\n  min_cluster_size', min_cluster_size )
     return topic_model
+
 
 #### TRAIN MODEL #####
 def train_model(topic_model, docs_processed, embedding_file = ''):
