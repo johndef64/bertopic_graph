@@ -155,10 +155,26 @@ from bertopic.representation import MaximalMarginalRelevance
 from bertopic.representation import KeyBERTInspired
 
 # Plotly: Set notebook mode to work offline
-import plotly.offline as pyo
 import plotly.graph_objs as go
-pyo.init_notebook_mode()
+import plotly.io as pio
+#import plotly.offline as pyo
+#pyo.init_notebook_mode()
 
+if 'google.colab' in sys.modules:
+    pio.renderers.default = "colab"
+else:
+    pio.renderers.default = "notebook"
+'''
+Renderers configuration
+    -----------------------
+        Default renderer: 'notebook_connected'
+        Available renderers:
+            ['plotly_mimetype', 'jupyterlab', 'nteract', 'vscode',
+             'notebook', 'notebook_connected', 'kaggle', 'azure', 'colab',
+             'cocalc', 'databricks', 'json', 'png', 'jpeg', 'jpg', 'svg',
+             'pdf', 'browser', 'firefox', 'chrome', 'chromium', 'iframe',
+             'iframe_connected', 'sphinx_gallery']
+'''
 
 text_models = {1:"allenai-specter",
                # SPECTER is a model trained on scientific citations and can be used to estimate the similarity of two publications. We can use it to find similar papers.
@@ -169,6 +185,7 @@ text_models = {1:"allenai-specter",
 
 model_id = input('Choose text model (id):\n'+str(text_models))
 text_model = text_models[int(model_id)]
+time.sleep(2)
 sentence_transformer = SentenceTransformer(text_model)
 
 def setup_model(base_embedder = text_model,
