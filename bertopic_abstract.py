@@ -167,7 +167,8 @@ text_models = {1:"allenai-specter",
                3:"all-MiniLM-L6-v2"  # while all-MiniLM-L6-v2 is 5 times faster and still offers good quality.
                } # https://www.sbert.net/docs/pretrained_models.html
 
-text_model = text_models[int(input('Choose text model (id):\n'+str(text_models)))]
+model_id = input('Choose text model (id):\n'+str(text_models))
+text_model = text_models[int(model_id)]
 sentence_transformer = SentenceTransformer(text_model)
 
 def setup_model(base_embedder = text_model,
