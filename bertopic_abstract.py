@@ -313,11 +313,15 @@ def visualize_distribution(topic_model, probs, document_id=1):
     return fig
 
 
-def visualize_similarty(topic_model, topics=None, top_n_topics=None, n_clusters=None, width = 1100, height = 1100, save= False):
+def visualize_similarty(topic_model,
+                        topics=None,
+                        top_n_topics=None,
+                        n_clusters=None,
+                        width = 1100, height = 1100, save= False):
     fig = topic_model.visualize_heatmap(topics=topics,
                                         top_n_topics = top_n_topics,
                                         n_clusters = n_clusters,
-                                        #custom_labels=True,
+                                        custom_labels=False,
                                         width = width,
                                         height = height)
     if save:
@@ -394,8 +398,8 @@ def visualize_barchart(topic_model, topics, n_words=20):
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
-def create_wordcloud(topic_model, topic):
-    text = {word: value for word, value in topic_model.get_topic(topic)}
+def create_wordcloud(topic_model, topic_id):
+    text = {word: value for word, value in topic_model.get_topic(topic_id)}
     print(text)
     wc = WordCloud(background_color="white", max_words=1000, width=800, height=400)
     wc.generate_from_frequencies(text)
@@ -477,10 +481,11 @@ document_info = bt.get_document_info(topic_model, bert_abs)
 #### MODEL VISUALIZATION (Plotly) #####
 fig_documents = bt.visualize_documents(topic_model, bert_abs)
 doc_distribution = bt.visualize_distribution(topic_model, probs, 1)
-fig_similarty = bt.visualize_similarty(topic_model,topics, width = 500, height = 500)
+fig_similarty = bt.visualize_similarty(topic_model, width = 500, height = 500)
 fig_hierarchy = bt.visualize_hierarchy(topic_model, width=700, height=600)
 
 #### WORD CLOUDS #####
-topic_cloud = bt.create_wordcloud(topic_model, topic)
+topic_cloud = bt.create_wordcloud(topic_model, 1) #topic_id
 topics_cloud = bt.create_wordcloud_multiple(topic_model, topics, output_path='wordcloud.png', dpi=300, save=True)
 '''
+#%%
