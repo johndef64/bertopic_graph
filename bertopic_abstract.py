@@ -135,7 +135,7 @@ def load_corpus_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
 
 
 ######### INSTALL REQUIREMENTS #########
-requirements=['nltk','numpy','pandas','matplotlib','bertopic','wordcloud']
+requirements=['nltk','numpy','pandas','matplotlib','bertopic','wordcloud','kaleido']
 check_and_install_requirements(requirements)
 #!pip install bertopic[visualization]
 
@@ -162,6 +162,7 @@ import plotly.io as pio
 
 if 'google.colab' in sys.modules:
     pio.renderers.default = "colab"
+    print('Google Colab detected: pio.renderers.default = "colab"')
 else:
     pio.renderers.default = "notebook"
 '''
@@ -323,10 +324,12 @@ def visualize_documents(topic_model, docs_processed, sample=1, embeddings='', cu
     return fig
 
 
-def visualize_distribution(topic_model, probs, document_id=1):
+def visualize_distribution(topic_model, probs, document_id=1, width = 600, height= 400):
     fig = topic_model.visualize_distribution(probs[document_id],
                                              min_probability = 0,
-                                             custom_labels = False)
+                                             custom_labels = False,
+                                             width = width,
+                                             height= height)
     fig.show()
     return fig
 
