@@ -89,6 +89,7 @@ def check_and_install_requirements(requirements):
                 print(f"{module}' was installed correctly.")
         else:
             exit()
+            
 def load_preprocessed(doc_name = 'abs_preprocessed.txt'):
     with open(save_path+doc_name, 'r',encoding='utf-8') as file:
         docs_processed = []
