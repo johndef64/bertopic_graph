@@ -101,7 +101,7 @@ def load_preprocessed(doc_name = 'abs_preprocessed.txt'):
 
 #get_gitfile("https://raw.githubusercontent.com/johndef64/pyutilities_datascience/main/general_utilities.py")
 
-def lower(text):
+def conservative_lower(text):
     # Split the text into words
     words = text.split()
     # Lowercase the words that don't have consecutive uppercase letters
@@ -129,7 +129,7 @@ def load_corpus_from_csv(doc_name = 'scopus.csv', abs_col= 'Abstract'):
     timea = time.time()
     sampled_docs = docs_to_process
     docs_str = str(sampled_docs)
-    docs_lower = lower(docs_str)
+    docs_lower = conservative_lower(docs_str)
     docs_processed = ast.literal_eval(docs_lower)
     print('\nNormalization runtime:',time.time()-timea)
     return docs_processed
@@ -265,8 +265,8 @@ def setup_model(base_embedder = text_model,
     return topic_model
 
 
-#### TRAIN MODEL #####
-def train_model(topic_model, docs_processed, embedding_file = ''):
+#### FIT MODEL #####
+def fit_model(topic_model, docs_processed, embedding_file = ''):
     # Step 1 Embedding documents with sentence_transformer
 
     if embedding_file != '':
@@ -495,8 +495,8 @@ topic_model = bt.setup_model(
                 diversity = 0.1, # 0.1 default
                  )
 
-#### TRAIN MODEL #####
-topics, probs, embeddings = bt.train_model(topic_model, bert_abs)
+#### FIT MODEL #####
+topics, probs, embeddings = bt.fit_model(topic_model, bert_abs)
 
 #### EXPLORE MODEL #####
 topic_info = bt.get_topic_info(topic_model)
