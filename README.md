@@ -39,6 +39,6 @@ The complete graph consists of three layers:
 
 The complete graph is available in 'data/semantic_graph.graphml' and can be loaded into tools like Neo4J or Cytoscape for its examination.
 
-![Workflow](imgs/topic_hierarchy_layers.png)
+![Workflow](imgs/semantic_graph_layer.png)
 
 If you encounter any challenges or have inquiries, feel free to raise an issue in this repository.
