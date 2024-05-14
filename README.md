@@ -1,30 +1,26 @@
-
 # GRPM BERTopic Analysis
-This repository contains the Jupyter notebook `grpm_bertopic.ipynb` which a topic modeling pipeline BERTopic based to unravel hidden topic among Pubmed genetic literature.
+This repository contains the Jupyter notebook `grpm_bertopic.ipynb`, which presents a semantic graph-based information retrieval system using BERTopic to analyze hidden topics within genetic literature related to MeSH terms specific to nutrigenomics.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/johndef64/grpm_bertopic/blob/main/grpm_bertopic.ipynb)
 
-
-
 ## Repository Structure
-- `data` : This folder contains the required data for running the Jupyter notebook.
-- `grpm_bertopic.ipynb` : The Jupyter notebook file contains all the steps, code and detailed information about the GRPM BERTopic analysis process.
+- `data`: Contains the necessary data produced during the notebook execution.
+- `grpm_bertopic.ipynb`: Jupyter notebook file detailing the GRPM BERTopic analysis process with a focus on semantic graph-based information retrieval in the nutrigenomics domain.
 
 ## Requirements
-All required libraries and their specific versions used for this project are listed within the `grpm_bertopic.ipynb` notebook. Make sure to install these dependencies before running the notebook.
+All required libraries and their specific versions used in this project are outlined within the `grpm_bertopic.ipynb` notebook. Ensure to install these dependencies before executing the notebook.
 
 ## Usage
-To perform the GRPM BERTopic analysis, follow the steps laid out in the `grpm_bertopic.ipynb` notebook. Each step is well-documented and includes the corresponding code snippet. Following these steps, you'll be able to unravel the intricate connections between genetic variations and MeSH term provided.
+To conduct the GRPM BERTopic analysis for semantic graph-based information retrieval in nutrigenomics, follow the steps provided in the `grpm_bertopic.ipynb` notebook. Each step includes detailed documentation and corresponding code snippets. By following these steps, you will explore complex relationships between genetic variations and MeSH terms specific to nutrigenomics.
 
-The general workflow has been depicted below:
-![Workflow](data/workflow_chart.png)
+The general workflow is illustrated below:
+![Workflow](data/workflow_chart.eps)
 
 ## About GRPM BERTopic Analysis
-This analysis leverages the BERTopic pipeline to perform the following steps:
-0. It fetches a comprehensive dataset of paper abstracts related to human genetic polymorphisms (GRPM Dataset, based on LitVar and PubMed) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8205724.svg)](https://doi.org/10.5281/zenodo.8205724)
-1. The preprocessing of this dataset is based on custom set of MeSH terms provided by the user (an example could be found in `data/ref-mesh.csv`). It is necessary to get the corpus of paper abstracts for the next step.
-2. Utilizes the BERTopic architecture to perform topic modeling on the corpus of abstracts. Employing Hierarchical Clustering, a comprehensive vision of the underlying structure of the topic model is achieved.
-3. By performing post-processing, it elucidates certain topics for further detailed exploration of the content and potential implications of the identified genetic influences on the biomedical filed defined by your custom MeSH terms.
+This analysis employs the BERTopic pipeline to:
+1. Utilize a curated dataset enriched with genetic features related to nutrigenomics.
+2. Preprocess the dataset based on MeSH terms specifically chosen for the nutrigenomics domain.
+3. Implement the BERTopic methodology to perform topic modeling on the dataset, enabling a structured exploration of genetic influences, interactions, and implications in nutrigenomics.
+4. Construct a semantic graph representing intertopic relationships and dependencies, fostering enhanced information retrieval and contextual understanding within the nutrigenomics domain.
 
-If you encounter any issues or have any questions, feel free to open an issue in this repository.
-
+If you encounter any challenges or have inquiries, feel free to raise an issue in this repository.
