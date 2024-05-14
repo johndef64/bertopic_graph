@@ -14,7 +14,7 @@ All required libraries and their specific versions used in this project are outl
 To conduct the GRPM BERTopic analysis for semantic graph-based information retrieval in nutrigenomics, follow the steps provided in the `grpm_bertopic.ipynb` notebook. Each step includes detailed documentation and corresponding code snippets. By following these steps, you will explore complex relationships between genetic variations and MeSH terms specific to nutrigenomics.
 
 The general workflow is illustrated below:
-![Workflow](data/workflow_chart.eps)
+![Workflow](data/workflow_chart.png)
 
 ## About GRPM BERTopic Analysis
 This analysis employs the BERTopic pipeline to:
