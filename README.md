@@ -32,6 +32,8 @@ The semantic graph serves as the foundation of the information retrieval system,
 By querying the semantic graph, researchers can navigate through the interconnected topics and retrieve relevant information with contextual understanding.
 We employed the hierarchical clustering tree as the root of the semantic graph through the aggregation of semantically associated topics into coherent clusters.
 
+![Workflow](imgs/semantic_graph_layer.png)
+
 The complete graph consists of three layers:
 1. The first layer is the backbone of the graph, it consists in the hierarchical tree connecting each detected topic and the most semantically significant terms for each topic (based on c-TF-IDF score). It can be observed that some terms are common across multiple topics.
 2. The second layer of the graph contains nodes related to the papers with PubMed URLs
@@ -39,6 +41,5 @@ The complete graph consists of three layers:
 
 The complete graph is available in 'data/semantic_graph.graphml' and can be loaded into tools like Neo4J or Cytoscape for its examination.
 
-![Workflow](imgs/semantic_graph_layer.png)
 
 If you encounter any challenges or have inquiries, feel free to raise an issue in this repository.
