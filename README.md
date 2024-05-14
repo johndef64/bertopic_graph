@@ -7,6 +7,7 @@ This repository contains the Jupyter notebook `grpm_bertopic.ipynb`, which prese
 - `data`: Contains the necessary data produced during the notebook execution.
 - `utlis`: Contains accessory python code.
 - `grpm_bertopic.ipynb`: Jupyter notebook detailing the GRPM BERTopic Semantic analysis process with a focus on semantic graph-based information retrieval in the nutrigenomics domain.
+- `bertopic_tutorial.ipynb`: Jupyter notebook created for educational purposes.
 
 ## Requirements
 All required libraries and their specific versions used in this project are outlined within the `grpm_bertopic.ipynb` notebook. Ensure to install these dependencies before executing the notebook.
@@ -39,6 +40,5 @@ The complete graph consists of three layers:
 The complete graph is available in 'data/semantic_graph.graphml' and can be loaded into tools like Neo4J or Cytoscape for its examination.
 
 ![Workflow](imgs/topic_hierarchy_layers.png)
-
 
 If you encounter any challenges or have inquiries, feel free to raise an issue in this repository.
