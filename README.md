@@ -1,7 +1,7 @@
 # BERTopic for Semantic Graph Information Retrieval
 This repository contains the Jupyter notebook `bertopic_graph.ipynb`, which presents a semantic graph-based information retrieval system using BERTopic to analyze hidden topics within genetic literature related to MeSH terms specific to nutrigenomics.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/johndef64/grpm_bertopic/blob/main/grpm_bertopic.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/johndef64/bertopic_graph/blob/main/grpm_bertopic.ipynb)
 
 ## Repository Structure
 - `data`: Harvest the data produced during the notebook execution.
